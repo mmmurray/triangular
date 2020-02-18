@@ -1,0 +1,17 @@
+*.zip
+.DS_Store
+.eslintignore
+.eslintrc.js
+.huskyrc
+.npmignore
+.prettierrc
+.terraform
+.tfplan
+commitlint.config.js
+coverage
+dist/example
+lib
+node_modules
+tsconfig.json
+tsconfig.lib.json
+yarn-error.log

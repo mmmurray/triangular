@@ -1,0 +1,24 @@
+{
+  "name": "triangular",
+  "version": "0.0.0",
+  "description": "Type safe API for WebGL",
+  "author": "Mark Murray",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "mmm build",
+    "deploy": "./scripts/deploy.sh",
+    "dev": "mmm dev",
+    "format": "mmm format",
+    "jest": "mmm jest",
+    "release": "mmm release",
+    "test": "mmm test",
+    "test:compile": "mmm test:compile",
+    "test:coverage": "mmm test:coverage",
+    "test:lint": "mmm test:lint"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mmm-scripts": "1.1.0"
+  }
+}
