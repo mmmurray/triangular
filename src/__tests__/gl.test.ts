@@ -97,7 +97,7 @@ test('can draw triangles', () => {
     'vertexAttribPointer("aloc:program-1:a_at1", 2, "float", false, 0, 0)',
     'uniformMatrix2fv("uloc:program-1:u_un1", false, {"0":1,"1":0,"2":0,"3":1})',
     'useProgram("program-1")',
-    'drawArrays("triangles", 0, 6)',
+    'drawArrays("triangles", 0, 3)',
   ])
 })
 
@@ -146,7 +146,7 @@ test('can draw triangles with indices', () => {
     'uniformMatrix2fv("uloc:program-1:u_un1", false, {"0":1,"1":0,"2":0,"3":1})',
     'useProgram("program-1")',
     'bindBuffer("element_array_buffer", "buffer-2")',
-    'drawElements("triangles", 6, "uint", 0)',
+    'drawElements("triangles", 3, "uint", 0)',
   ])
 })
 
