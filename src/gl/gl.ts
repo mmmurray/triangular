@@ -244,8 +244,16 @@ const createGL = (gl: WebGLRenderingContext): GL => {
 
       return {
         drawTriangles: ({ attributeBuffers, uniforms, indicesBuffer }) => {
+          let count: number | null = null
+
           Object.entries(attributeBuffers).forEach(
             ([name, bufferReference]) => {
+              if (count === null) {
+                count = bufferReference.getSize()
+              } else if (bufferReference.getSize() !== count) {
+                throw new Error(`Attribute buffer size mismatch`)
+              }
+
               const type: AttributeShaderTypeName = bufferReference.type
               const location = attributeLocations[name]
               const buffer = buffers[bufferReference.id]
@@ -296,6 +304,10 @@ const createGL = (gl: WebGLRenderingContext): GL => {
 
           gl.useProgram(program)
 
+          if (count === null) {
+            throw new Error('No attribute buffer data supplied')
+          }
+
           if (indicesBuffer) {
             const buffer = buffers[indicesBuffer.id]
 
@@ -304,9 +316,14 @@ const createGL = (gl: WebGLRenderingContext): GL => {
             }
 
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer)
-            gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, 0)
+            gl.drawElements(
+              gl.TRIANGLES,
+              indicesBuffer.getSize(),
+              gl.UNSIGNED_INT,
+              0,
+            )
           } else {
-            gl.drawArrays(gl.TRIANGLES, 0, 6)
+            gl.drawArrays(gl.TRIANGLES, 0, count)
           }
         },
       }
