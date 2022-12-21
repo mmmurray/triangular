@@ -4,7 +4,7 @@ Type safe wrapper for WebGL.
 
 ## Install
 
-```bash
+```console
 yarn add triangular
 ```
 
