@@ -11,20 +11,13 @@ yarn add triangular
 ## Usage
 
 ```ts
-import { createGL } from 'triangular'
+import { createGL } from 'triangular';
 
-const canvas = document.createElement('canvas')
-const context = canvas.getContext('webgl')
+const canvas = document.body.appendChild(document.createElement('canvas'));
 
-if (!context) {
-  throw new Error('Your device does not support WebGL')
-}
+const gl = createGL(canvas);
 
-document.body.appendChild(canvas)
-
-const gl = createGL(context)
-
-const positionBuffer = gl.createAttributeBuffer('vec2', [0, 1, 1, -1, -1, -1])
+const positionBuffer = gl.createAttributeBuffer('vec2', [0, 1, 1, -1, -1, -1]);
 
 const program = gl.createProgram({
   attributes: { position: 'vec2' },
@@ -41,14 +34,14 @@ const program = gl.createProgram({
         gl_FragColor = vec4(0, ${varying.color}, 1);
       }
     `,
-})
+});
 
-gl.clear()
+gl.clear();
 
 program.drawTriangles({
   uniforms: {},
   attributeBuffers: { position: positionBuffer },
-})
+});
 ```
 
 [![Edit triangular-example-1](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/triangular-example-1-d77h6?fontsize=14&hidenavigation=1&theme=dark)

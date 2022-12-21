@@ -1,1 +1,2 @@
-export { createGL } from './gl'
+export { createGL } from './gl';
+export * from './types';
