@@ -1,0 +1,5 @@
+{
+  "coverageDirectory": "<rootDir>/../coverage",
+  "preset": "ts-jest",
+  "rootDir": "src"
+}
