@@ -1,7 +1,7 @@
 {
   "name": "triangular",
-  "version": "0.2.0",
-  "description": "Type safe API for WebGL",
+  "version": "0.2.1",
+  "description": "Type safe wrapper for WebGL.",
   "author": "Mark Murray",
   "license": "MIT",
   "repository": "git@github.com:mmmurray/triangular.git",

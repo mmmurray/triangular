@@ -39,20 +39,20 @@ const getSizeOfType = (type: AttributeShaderTypeName): number => {
 };
 
 const compileShader = (
-  gl: WebGLRenderingContext,
+  ctx: WebGLRenderingContext,
   type: GLenum,
   source: string,
 ): WebGLShader => {
-  const shader = gl.createShader(type);
+  const shader = ctx.createShader(type);
 
   if (!shader) {
     throw new Error('Failed to create shader');
   }
 
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
+  ctx.shaderSource(shader, source);
+  ctx.compileShader(shader);
 
-  const shaderCompilerLog = gl.getShaderInfoLog(shader);
+  const shaderCompilerLog = ctx.getShaderInfoLog(shader);
   if (shaderCompilerLog) {
     console.error('Error compiling shader', shaderCompilerLog);
   }
@@ -61,35 +61,35 @@ const compileShader = (
 };
 
 const setUniform = (
-  gl: WebGLRenderingContext,
+  ctx: WebGLRenderingContext,
   location: WebGLUniformLocation,
   type: UniformShaderTypeName,
   value: any,
 ) => {
   switch (type) {
     case 'bool':
-      gl.uniform1f(location, value ? 1 : 0);
+      ctx.uniform1f(location, value ? 1 : 0);
       break;
     case 'float':
-      gl.uniform1f(location, value);
+      ctx.uniform1f(location, value);
       break;
     case 'vec2':
-      gl.uniform2fv(location, new Float32Array(value));
+      ctx.uniform2fv(location, new Float32Array(value));
       break;
     case 'vec3':
-      gl.uniform3fv(location, new Float32Array(value));
+      ctx.uniform3fv(location, new Float32Array(value));
       break;
     case 'vec4':
-      gl.uniform4fv(location, new Float32Array(value));
+      ctx.uniform4fv(location, new Float32Array(value));
       break;
     case 'mat2':
-      gl.uniformMatrix2fv(location, false, new Float32Array(value));
+      ctx.uniformMatrix2fv(location, false, new Float32Array(value));
       break;
     case 'mat3':
-      gl.uniformMatrix3fv(location, false, new Float32Array(value));
+      ctx.uniformMatrix3fv(location, false, new Float32Array(value));
       break;
     case 'mat4':
-      gl.uniformMatrix4fv(location, false, new Float32Array(value));
+      ctx.uniformMatrix4fv(location, false, new Float32Array(value));
       break;
     default:
       console.error('Failed to set uniform');
@@ -97,18 +97,18 @@ const setUniform = (
 };
 
 const createGL = (canvas: HTMLCanvasElement): GL => {
-  const gl = canvas.getContext('webgl', { antialias: true });
-  if (!gl) {
+  const ctx = canvas.getContext('webgl', { antialias: true });
+  if (!ctx) {
     throw new Error('Device does not support WebGL');
   }
 
-  const ext = gl.getExtension('OES_element_index_uint');
+  const ext = ctx.getExtension('OES_element_index_uint');
   if (!ext) {
     throw new Error('Device does not support gl.UNSIGNED_INT indices');
   }
 
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  ctx.enable(ctx.BLEND);
+  ctx.blendFunc(ctx.SRC_ALPHA, ctx.ONE_MINUS_SRC_ALPHA);
 
   let nextBufferId = 1;
   let nextTextureId = 0;
@@ -117,15 +117,15 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
 
   return {
     setViewport: (x, y, width, height) => {
-      gl.viewport(x, y, width, height);
+      ctx.viewport(x, y, width, height);
     },
     clear: (color = [0, 0, 0, 1]) => {
-      gl.clearColor(...color);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      ctx.clearColor(...color);
+      ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
     },
     createIndicesBuffer: () => {
       const id = nextBufferId++;
-      const buffer = gl.createBuffer();
+      const buffer = ctx.createBuffer();
       let size = 0;
 
       if (!buffer) {
@@ -139,15 +139,15 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           data instanceof Uint32Array ? data : new Uint32Array(data);
         size = arrayData.length;
 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, arrayData, gl.STATIC_DRAW);
+        ctx.bindBuffer(ctx.ELEMENT_ARRAY_BUFFER, buffer);
+        ctx.bufferData(ctx.ELEMENT_ARRAY_BUFFER, arrayData, ctx.STATIC_DRAW);
       };
 
       return { id, getSize: () => size, bufferData };
     },
     createAttributeBuffer: (type) => {
       const id = nextBufferId++;
-      const buffer = gl.createBuffer();
+      const buffer = ctx.createBuffer();
       let size = 0;
 
       if (!buffer) {
@@ -168,15 +168,15 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           );
         }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, arrayData, gl.STATIC_DRAW);
+        ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer);
+        ctx.bufferData(ctx.ARRAY_BUFFER, arrayData, ctx.STATIC_DRAW);
       };
 
       return { type, id, getSize: () => size, bufferData };
     },
     createTextureBuffer: (type) => {
       const id = nextTextureId++;
-      const texture = gl.createTexture();
+      const texture = ctx.createTexture();
 
       if (!texture) {
         throw new Error('Failed to create texture');
@@ -185,34 +185,42 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
       textures[id] = texture;
 
       const bufferData = (data: TextureData) => {
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(
-          gl.TEXTURE_2D,
+        ctx.bindTexture(ctx.TEXTURE_2D, texture);
+        ctx.texImage2D(
+          ctx.TEXTURE_2D,
           0,
-          gl.RGBA,
-          gl.RGBA,
-          gl.UNSIGNED_BYTE,
+          ctx.RGBA,
+          ctx.RGBA,
+          ctx.UNSIGNED_BYTE,
           data as any,
         );
 
         if (isPowerOf2(data.width) && isPowerOf2(data.height)) {
-          gl.generateMipmap(gl.TEXTURE_2D);
-          gl.texParameteri(
-            gl.TEXTURE_2D,
-            gl.TEXTURE_MIN_FILTER,
-            gl.LINEAR_MIPMAP_LINEAR,
+          ctx.generateMipmap(ctx.TEXTURE_2D);
+          ctx.texParameteri(
+            ctx.TEXTURE_2D,
+            ctx.TEXTURE_MIN_FILTER,
+            ctx.LINEAR_MIPMAP_LINEAR,
           );
         } else {
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          ctx.texParameteri(
+            ctx.TEXTURE_2D,
+            ctx.TEXTURE_WRAP_S,
+            ctx.CLAMP_TO_EDGE,
+          );
+          ctx.texParameteri(
+            ctx.TEXTURE_2D,
+            ctx.TEXTURE_WRAP_T,
+            ctx.CLAMP_TO_EDGE,
+          );
+          ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR);
         }
       };
 
       return { type, id, bufferData };
     },
     createProgram: (options) => {
-      const program = gl.createProgram();
+      const program = ctx.createProgram();
       if (!program) {
         throw new Error('Failed to create program');
       }
@@ -319,23 +327,23 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
         .filter(Boolean)
         .join('\n');
 
-      gl.attachShader(
+      ctx.attachShader(
         program,
-        compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource),
+        compileShader(ctx, ctx.VERTEX_SHADER, vertexShaderSource),
       );
 
-      gl.attachShader(
+      ctx.attachShader(
         program,
-        compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource),
+        compileShader(ctx, ctx.FRAGMENT_SHADER, fragmentShaderSource),
       );
 
-      gl.linkProgram(program);
-      gl.useProgram(program);
+      ctx.linkProgram(program);
+      ctx.useProgram(program);
 
       const attributeLocations = Object.keys(options.attributes).reduce<{
         [name in keyof typeof options.attributes]: number;
       }>((acc, name: keyof typeof options.attributes) => {
-        const location = gl.getAttribLocation(program, `a_${String(name)}`);
+        const location = ctx.getAttribLocation(program, `a_${String(name)}`);
 
         if (location < 0) {
           throw new Error(
@@ -352,7 +360,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
       const uniformLocations = Object.keys(options.uniforms).reduce<{
         [name in keyof typeof options.uniforms]: WebGLUniformLocation;
       }>((acc, name: keyof typeof options.uniforms) => {
-        const location = gl.getUniformLocation(program, `u_${String(name)}`);
+        const location = ctx.getUniformLocation(program, `u_${String(name)}`);
 
         if (!location) {
           throw new Error(
@@ -371,7 +379,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
       ).reduce<{
         [name in keyof typeof options.fragmentUniforms]: WebGLUniformLocation;
       }>((acc, name: keyof typeof options.fragmentUniforms) => {
-        const location = gl.getUniformLocation(program, `u_${String(name)}`);
+        const location = ctx.getUniformLocation(program, `u_${String(name)}`);
 
         if (!location) {
           throw new Error(
@@ -388,7 +396,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
       const textureLocations = Object.keys(options.textures).reduce<{
         [name in keyof typeof options.textures]: WebGLUniformLocation;
       }>((acc, name: keyof typeof options.textures) => {
-        const location = gl.getUniformLocation(program, `t_${String(name)}`);
+        const location = ctx.getUniformLocation(program, `t_${String(name)}`);
 
         if (!location) {
           throw new Error(
@@ -411,7 +419,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           textureBuffers,
           strip,
         }) => {
-          gl.useProgram(program);
+          ctx.useProgram(program);
 
           let count: number | null = null;
 
@@ -431,15 +439,15 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
                 throw new Error('Invalid attribute buffer reference');
               }
 
-              gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-              gl.enableVertexAttribArray(location);
+              ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer);
+              ctx.enableVertexAttribArray(location);
 
               switch (type) {
                 case 'float':
-                  gl.vertexAttribPointer(location, 1, gl.FLOAT, false, 0, 0);
+                  ctx.vertexAttribPointer(location, 1, ctx.FLOAT, false, 0, 0);
                   break;
                 case 'vec2':
-                  gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
+                  ctx.vertexAttribPointer(location, 2, ctx.FLOAT, false, 0, 0);
                   break;
                 default:
                   console.error('Failed to bind attribute');
@@ -450,13 +458,13 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           Object.entries(uniforms).forEach(([name, value]) => {
             const type: UniformShaderTypeName = options.uniforms[name];
             const location = uniformLocations[name];
-            setUniform(gl, location, type, value);
+            setUniform(ctx, location, type, value);
           });
 
           Object.entries(fragmentUniforms).forEach(([name, value]) => {
             const type: UniformShaderTypeName = options.fragmentUniforms[name];
             const location = fragmentUniformLocations[name];
-            setUniform(gl, location, type, value);
+            setUniform(ctx, location, type, value);
           });
 
           Object.entries(textureBuffers).forEach(([name, textureReference]) => {
@@ -467,15 +475,15 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
               throw new Error('Invalid texture reference');
             }
 
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.uniform1i(location, 0);
+            ctx.bindTexture(ctx.TEXTURE_2D, texture);
+            ctx.uniform1i(location, 0);
           });
 
           if (count === null) {
             throw new Error('No attribute buffer data supplied');
           }
 
-          const drawingMode = strip ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+          const drawingMode = strip ? ctx.TRIANGLE_STRIP : ctx.TRIANGLES;
 
           if (indicesBuffer) {
             const buffer = buffers[indicesBuffer.id];
@@ -484,15 +492,15 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
               throw new Error('Invalid indices buffer reference');
             }
 
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-            gl.drawElements(
+            ctx.bindBuffer(ctx.ELEMENT_ARRAY_BUFFER, buffer);
+            ctx.drawElements(
               drawingMode,
               indicesBuffer.getSize(),
-              gl.UNSIGNED_INT,
+              ctx.UNSIGNED_INT,
               0,
             );
           } else {
-            gl.drawArrays(drawingMode, 0, count);
+            ctx.drawArrays(drawingMode, 0, count);
           }
         },
       };
