@@ -18,6 +18,38 @@ const createMockCanvas = (
   const calls: string[] = [];
 
   const context: WebGLRenderingContext = {
+    TEXTURE0: 'TEXTURE0',
+    TEXTURE1: 'TEXTURE1',
+    TEXTURE2: 'TEXTURE2',
+    TEXTURE3: 'TEXTURE3',
+    TEXTURE4: 'TEXTURE4',
+    TEXTURE5: 'TEXTURE5',
+    TEXTURE6: 'TEXTURE6',
+    TEXTURE7: 'TEXTURE7',
+    TEXTURE8: 'TEXTURE8',
+    TEXTURE9: 'TEXTURE9',
+    TEXTURE10: 'TEXTURE10',
+    TEXTURE11: 'TEXTURE11',
+    TEXTURE12: 'TEXTURE12',
+    TEXTURE13: 'TEXTURE13',
+    TEXTURE14: 'TEXTURE14',
+    TEXTURE15: 'TEXTURE15',
+    TEXTURE16: 'TEXTURE16',
+    TEXTURE17: 'TEXTURE17',
+    TEXTURE18: 'TEXTURE18',
+    TEXTURE19: 'TEXTURE19',
+    TEXTURE20: 'TEXTURE20',
+    TEXTURE21: 'TEXTURE21',
+    TEXTURE22: 'TEXTURE22',
+    TEXTURE23: 'TEXTURE23',
+    TEXTURE24: 'TEXTURE24',
+    TEXTURE25: 'TEXTURE25',
+    TEXTURE26: 'TEXTURE26',
+    TEXTURE27: 'TEXTURE27',
+    TEXTURE28: 'TEXTURE28',
+    TEXTURE29: 'TEXTURE29',
+    TEXTURE30: 'TEXTURE30',
+    TEXTURE31: 'TEXTURE31',
     COLOR_BUFFER_BIT: 1,
     DEPTH_BUFFER_BIT: 2,
     ARRAY_BUFFER: 'array_buffer',
@@ -52,6 +84,7 @@ const createMockCanvas = (
     ...createTrackedFn('shaderSource', calls),
     ...createTrackedFn('compileShader', calls),
     ...createTrackedFn('bindBuffer', calls),
+    ...createTrackedFn('activeTexture', calls),
     ...createTrackedFn('bindTexture', calls),
     ...createTrackedFn('bufferData', calls),
     ...createTrackedFn('enableVertexAttribArray', calls),
@@ -71,7 +104,7 @@ const createMockCanvas = (
 
       return context;
     },
-  } as HTMLCanvasElement;
+  } as any;
 
   return { canvas, getCalls };
 };
@@ -234,6 +267,7 @@ test('can draw triangles with texture', () => {
     'enableVertexAttribArray("aloc:program-1:a_at1")',
     'vertexAttribPointer("aloc:program-1:a_at1", 2, "float", false, 0, 0)',
     'uniformMatrix2fv("uloc:program-1:u_un1", false, {"0":1,"1":0,"2":0,"3":1})',
+    'activeTexture("TEXTURE0")',
     'bindTexture("texture-2d", "texture-1")',
     'uniform1i("uloc:program-1:t_tx1", 0)',
     'drawArrays("triangles", 0, 3)',
