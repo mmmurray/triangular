@@ -5,7 +5,7 @@ import {
   UniformShaderTypeName,
 } from './types';
 
-const isPowerOf2 = (value: number) => (value & (value - 1)) == 0;
+const isPowerOf2 = (value: number) => (value & (value - 1)) === 0;
 
 const getSizeOfType = (type: AttributeShaderTypeName): number => {
   switch (type) {
@@ -115,6 +115,41 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
   const buffers: { [id: number]: WebGLBuffer | undefined } = {};
   const textures: { [id: number]: WebGLTexture | undefined } = {};
 
+  const textureUnits = [
+    ctx.TEXTURE0,
+    ctx.TEXTURE1,
+    ctx.TEXTURE2,
+    ctx.TEXTURE3,
+    ctx.TEXTURE4,
+    ctx.TEXTURE5,
+    ctx.TEXTURE6,
+    ctx.TEXTURE7,
+    ctx.TEXTURE8,
+    ctx.TEXTURE9,
+    ctx.TEXTURE10,
+    ctx.TEXTURE11,
+    ctx.TEXTURE12,
+    ctx.TEXTURE13,
+    ctx.TEXTURE14,
+    ctx.TEXTURE15,
+    ctx.TEXTURE16,
+    ctx.TEXTURE17,
+    ctx.TEXTURE18,
+    ctx.TEXTURE19,
+    ctx.TEXTURE20,
+    ctx.TEXTURE21,
+    ctx.TEXTURE22,
+    ctx.TEXTURE23,
+    ctx.TEXTURE24,
+    ctx.TEXTURE25,
+    ctx.TEXTURE26,
+    ctx.TEXTURE27,
+    ctx.TEXTURE28,
+    ctx.TEXTURE29,
+    ctx.TEXTURE30,
+    ctx.TEXTURE31,
+  ];
+
   return {
     setViewport: (x, y, width, height) => {
       ctx.viewport(x, y, width, height);
@@ -164,7 +199,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
 
         if (arrayData.length % sizeOfType !== 0) {
           throw new Error(
-            `Buffer data for attribute ${name} does not contain a multiple of ${sizeOfType} elements which is required for attributes of type ${type}`,
+            `Buffer data for attribute does not contain a multiple of ${sizeOfType} elements which is required for attributes of type ${type}`,
           );
         }
 
@@ -467,17 +502,21 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
             setUniform(ctx, location, type, value);
           });
 
-          Object.entries(textureBuffers).forEach(([name, textureReference]) => {
-            const location = textureLocations[name];
-            const texture = textures[textureReference.id];
+          Object.entries(textureBuffers).forEach(
+            ([name, textureReference], textureIndex) => {
+              const location = textureLocations[name];
+              const texture = textures[textureReference.id];
 
-            if (!texture) {
-              throw new Error('Invalid texture reference');
-            }
+              if (!texture) {
+                throw new Error('Invalid texture reference');
+              }
 
-            ctx.bindTexture(ctx.TEXTURE_2D, texture);
-            ctx.uniform1i(location, 0);
-          });
+              const textureUnit = textureUnits[textureIndex];
+              ctx.activeTexture(textureUnit);
+              ctx.bindTexture(ctx.TEXTURE_2D, texture);
+              ctx.uniform1i(location, textureIndex);
+            },
+          );
 
           if (count === null) {
             throw new Error('No attribute buffer data supplied');
