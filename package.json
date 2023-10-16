@@ -1,9 +1,9 @@
 {
   "name": "triangular",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Type safe wrapper for WebGL.",
   "author": "Mark Murray",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "repository": "git@github.com:mmmurray/triangular.git",
   "keywords": [
     "webgl",

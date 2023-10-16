@@ -1,90 +1,90 @@
-import { Mat2, Mat3, Mat4, Vec2, Vec3, Vec4 } from 'mantissa';
+import { Mat2, Mat3, Mat4, Vec2, Vec3, Vec4 } from "mantissa";
 
 export type ShaderTypeName =
-  | 'bool'
-  | 'int'
-  | 'float'
-  | 'bvec2'
-  | 'bvec3'
-  | 'bvec4'
-  | 'ivec2'
-  | 'ivec3'
-  | 'ivec4'
-  | 'vec2'
-  | 'vec3'
-  | 'vec4'
-  | 'mat2'
-  | 'mat3'
-  | 'mat4'
-  | 'sampler2D';
+  | "bool"
+  | "int"
+  | "float"
+  | "bvec2"
+  | "bvec3"
+  | "bvec4"
+  | "ivec2"
+  | "ivec3"
+  | "ivec4"
+  | "vec2"
+  | "vec3"
+  | "vec4"
+  | "mat2"
+  | "mat3"
+  | "mat4"
+  | "sampler2D";
 
 export type AttributeShaderTypeName =
-  | 'float'
-  | 'bvec2'
-  | 'bvec3'
-  | 'bvec4'
-  | 'ivec2'
-  | 'ivec3'
-  | 'ivec4'
-  | 'vec2'
-  | 'vec3'
-  | 'vec4'
-  | 'mat2'
-  | 'mat3'
-  | 'mat4';
+  | "float"
+  | "bvec2"
+  | "bvec3"
+  | "bvec4"
+  | "ivec2"
+  | "ivec3"
+  | "ivec4"
+  | "vec2"
+  | "vec3"
+  | "vec4"
+  | "mat2"
+  | "mat3"
+  | "mat4";
 
 export type UniformShaderTypeName =
-  | 'bool'
-  | 'int'
-  | 'float'
-  | 'bvec2'
-  | 'bvec3'
-  | 'bvec4'
-  | 'ivec2'
-  | 'ivec3'
-  | 'ivec4'
-  | 'vec2'
-  | 'vec3'
-  | 'vec4'
-  | 'mat2'
-  | 'mat3'
-  | 'mat4';
+  | "bool"
+  | "int"
+  | "float"
+  | "bvec2"
+  | "bvec3"
+  | "bvec4"
+  | "ivec2"
+  | "ivec3"
+  | "ivec4"
+  | "vec2"
+  | "vec3"
+  | "vec4"
+  | "mat2"
+  | "mat3"
+  | "mat4";
 
-export type VaryingShaderTypeName = 'float' | 'vec2' | 'vec3' | 'vec4';
+export type VaryingShaderTypeName = "float" | "vec2" | "vec3" | "vec4";
 
-export type TextureShaderTypeName = 'sampler2D';
+export type TextureShaderTypeName = "sampler2D";
 
-export type ShaderType<T extends ShaderTypeName> = T extends 'bool'
+export type ShaderType<T extends ShaderTypeName> = T extends "bool"
   ? boolean
-  : T extends 'int'
+  : T extends "int"
   ? number
-  : T extends 'float'
+  : T extends "float"
   ? number
-  : T extends 'bvec2'
+  : T extends "bvec2"
   ? [boolean, boolean]
-  : T extends 'bvec3'
+  : T extends "bvec3"
   ? [boolean, boolean, boolean]
-  : T extends 'bvec4'
+  : T extends "bvec4"
   ? [boolean, boolean, boolean, boolean]
-  : T extends 'ivec2'
+  : T extends "ivec2"
   ? [number, number]
-  : T extends 'ivec3'
+  : T extends "ivec3"
   ? [number, number, number]
-  : T extends 'ivec4'
+  : T extends "ivec4"
   ? [number, number, number, number]
-  : T extends 'vec2'
+  : T extends "vec2"
   ? Vec2
-  : T extends 'vec3'
+  : T extends "vec3"
   ? Vec3
-  : T extends 'vec4'
+  : T extends "vec4"
   ? Vec4
-  : T extends 'mat2'
+  : T extends "mat2"
   ? Mat2
-  : T extends 'mat3'
+  : T extends "mat3"
   ? Mat3
-  : T extends 'mat4'
+  : T extends "mat4"
   ? Mat4
-  : T extends 'sampler2D'
+  : T extends "sampler2D"
   ? number
   : never;
 
@@ -114,17 +114,17 @@ export type GL = {
   clear(color?: Vec4): void;
   createIndicesBuffer(): IndicesBufferReference;
   createAttributeBuffer<T extends AttributeShaderTypeName>(
-    type: T,
+    type: T
   ): AttributeBufferReference<T>;
   createTextureBuffer<T extends TextureShaderTypeName>(
-    type: T,
+    type: T
   ): TextureBufferReference<T>;
   createProgram<
     TAttributes extends Record<string, AttributeShaderTypeName>,
     TUniforms extends Record<string, UniformShaderTypeName>,
     TFragmentUniforms extends Record<string, UniformShaderTypeName>,
     TVarying extends Record<string, VaryingShaderTypeName>,
-    TTextures extends Record<string, TextureShaderTypeName>,
+    TTextures extends Record<string, TextureShaderTypeName>
   >(options: {
     attributes: TAttributes;
     uniforms: TUniforms;
