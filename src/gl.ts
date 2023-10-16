@@ -3,37 +3,37 @@ import {
   GL,
   TextureData,
   UniformShaderTypeName,
-} from './types';
+} from "./types";
 
 const isPowerOf2 = (value: number) => (value & (value - 1)) === 0;
 
 const getSizeOfType = (type: AttributeShaderTypeName): number => {
   switch (type) {
-    case 'float':
+    case "float":
       return 1;
-    case 'bvec2':
+    case "bvec2":
       return 2;
-    case 'bvec3':
+    case "bvec3":
       return 3;
-    case 'bvec4':
+    case "bvec4":
       return 4;
-    case 'ivec2':
+    case "ivec2":
       return 2;
-    case 'ivec3':
+    case "ivec3":
       return 3;
-    case 'ivec4':
+    case "ivec4":
       return 4;
-    case 'vec2':
+    case "vec2":
       return 2;
-    case 'vec3':
+    case "vec3":
       return 3;
-    case 'vec4':
+    case "vec4":
       return 4;
-    case 'mat2':
+    case "mat2":
       return 4;
-    case 'mat3':
+    case "mat3":
       return 9;
-    case 'mat4':
+    case "mat4":
       return 16;
   }
 };
@@ -41,12 +41,12 @@ const getSizeOfType = (type: AttributeShaderTypeName): number => {
 const compileShader = (
   ctx: WebGLRenderingContext,
   type: GLenum,
-  source: string,
+  source: string
 ): WebGLShader => {
   const shader = ctx.createShader(type);
 
   if (!shader) {
-    throw new Error('Failed to create shader');
+    throw new Error("Failed to create shader");
   }
 
   ctx.shaderSource(shader, source);
@@ -54,7 +54,7 @@ const compileShader = (
 
   const shaderCompilerLog = ctx.getShaderInfoLog(shader);
   if (shaderCompilerLog) {
-    console.error('Error compiling shader', shaderCompilerLog);
+    console.error("Error compiling shader", shaderCompilerLog);
   }
 
   return shader;
@@ -64,47 +64,47 @@ const setUniform = (
   ctx: WebGLRenderingContext,
   location: WebGLUniformLocation,
   type: UniformShaderTypeName,
-  value: any,
+  value: any
 ) => {
   switch (type) {
-    case 'bool':
+    case "bool":
       ctx.uniform1f(location, value ? 1 : 0);
       break;
-    case 'float':
+    case "float":
       ctx.uniform1f(location, value);
       break;
-    case 'vec2':
+    case "vec2":
       ctx.uniform2fv(location, new Float32Array(value));
       break;
-    case 'vec3':
+    case "vec3":
       ctx.uniform3fv(location, new Float32Array(value));
       break;
-    case 'vec4':
+    case "vec4":
       ctx.uniform4fv(location, new Float32Array(value));
       break;
-    case 'mat2':
+    case "mat2":
       ctx.uniformMatrix2fv(location, false, new Float32Array(value));
       break;
-    case 'mat3':
+    case "mat3":
       ctx.uniformMatrix3fv(location, false, new Float32Array(value));
       break;
-    case 'mat4':
+    case "mat4":
       ctx.uniformMatrix4fv(location, false, new Float32Array(value));
       break;
     default:
-      console.error('Failed to set uniform');
+      console.error("Failed to set uniform");
   }
 };
 
 const createGL = (canvas: HTMLCanvasElement): GL => {
-  const ctx = canvas.getContext('webgl', { antialias: true });
+  const ctx = canvas.getContext("webgl", { antialias: true });
   if (!ctx) {
-    throw new Error('Device does not support WebGL');
+    throw new Error("Device does not support WebGL");
   }
 
-  const ext = ctx.getExtension('OES_element_index_uint');
+  const ext = ctx.getExtension("OES_element_index_uint");
   if (!ext) {
-    throw new Error('Device does not support gl.UNSIGNED_INT indices');
+    throw new Error("Device does not support gl.UNSIGNED_INT indices");
   }
 
   ctx.enable(ctx.BLEND);
@@ -164,7 +164,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
       let size = 0;
 
       if (!buffer) {
-        throw new Error('Failed to create buffer');
+        throw new Error("Failed to create buffer");
       }
 
       buffers[id] = buffer;
@@ -186,7 +186,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
       let size = 0;
 
       if (!buffer) {
-        throw new Error('Failed to create buffer');
+        throw new Error("Failed to create buffer");
       }
 
       buffers[id] = buffer;
@@ -199,7 +199,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
 
         if (arrayData.length % sizeOfType !== 0) {
           throw new Error(
-            `Buffer data for attribute does not contain a multiple of ${sizeOfType} elements which is required for attributes of type ${type}`,
+            `Buffer data for attribute does not contain a multiple of ${sizeOfType} elements which is required for attributes of type ${type}`
           );
         }
 
@@ -214,7 +214,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
       const texture = ctx.createTexture();
 
       if (!texture) {
-        throw new Error('Failed to create texture');
+        throw new Error("Failed to create texture");
       }
 
       textures[id] = texture;
@@ -227,7 +227,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           ctx.RGBA,
           ctx.RGBA,
           ctx.UNSIGNED_BYTE,
-          data as any,
+          data as any
         );
 
         if (isPowerOf2(data.width) && isPowerOf2(data.height)) {
@@ -235,18 +235,18 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           ctx.texParameteri(
             ctx.TEXTURE_2D,
             ctx.TEXTURE_MIN_FILTER,
-            ctx.LINEAR_MIPMAP_LINEAR,
+            ctx.LINEAR_MIPMAP_LINEAR
           );
         } else {
           ctx.texParameteri(
             ctx.TEXTURE_2D,
             ctx.TEXTURE_WRAP_S,
-            ctx.CLAMP_TO_EDGE,
+            ctx.CLAMP_TO_EDGE
           );
           ctx.texParameteri(
             ctx.TEXTURE_2D,
             ctx.TEXTURE_WRAP_T,
-            ctx.CLAMP_TO_EDGE,
+            ctx.CLAMP_TO_EDGE
           );
           ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR);
         }
@@ -257,7 +257,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
     createProgram: (options) => {
       const program = ctx.createProgram();
       if (!program) {
-        throw new Error('Failed to create program');
+        throw new Error("Failed to create program");
       }
 
       const shadersAttributeNames = Object.keys(options.attributes).reduce<{
@@ -267,7 +267,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           acc[name] = `a_${String(name)}`;
           return acc;
         },
-        { ...options.attributes },
+        { ...options.attributes }
       );
 
       const shadersUniformNames = Object.keys(options.uniforms).reduce<{
@@ -277,11 +277,11 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           acc[name] = `u_${String(name)}`;
           return acc;
         },
-        { ...options.uniforms },
+        { ...options.uniforms }
       );
 
       const shadersFragmentUniformNames = Object.keys(
-        options.fragmentUniforms,
+        options.fragmentUniforms
       ).reduce<{
         [name in keyof typeof options.fragmentUniforms]: string;
       }>(
@@ -289,7 +289,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           acc[name] = `u_${String(name)}`;
           return acc;
         },
-        { ...options.fragmentUniforms },
+        { ...options.fragmentUniforms }
       );
 
       const shadersVaryingNames = Object.keys(options.varying).reduce<{
@@ -299,7 +299,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           acc[name] = `v_${String(name)}`;
           return acc;
         },
-        { ...options.varying },
+        { ...options.varying }
       );
 
       const shadersTextureNames = Object.keys(options.textures).reduce<{
@@ -309,31 +309,31 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
           acc[name] = `t_${String(name)}`;
           return acc;
         },
-        { ...options.textures },
+        { ...options.textures }
       );
 
       const shaderAttributeSource = Object.entries(options.attributes)
         .map(([name, type]) => `attribute ${type} a_${name};`)
-        .join('\n');
+        .join("\n");
 
       const shaderUniformSource = Object.entries(options.uniforms)
         .map(([name, type]) => `uniform ${type} u_${name};`)
-        .join('\n');
+        .join("\n");
 
       const shaderFragmentUniformSource = Object.entries(
-        options.fragmentUniforms,
+        options.fragmentUniforms
       )
-        .filter(([name]) => name !== 'texture')
+        .filter(([name]) => name !== "texture")
         .map(([name, type]) => `uniform ${type} u_${name};`)
-        .join('\n');
+        .join("\n");
 
       const shaderVaryingSource = Object.entries(options.varying)
         .map(([name, type]) => `varying ${type} v_${name};`)
-        .join('\n');
+        .join("\n");
 
       const shaderTextureSource = Object.entries(options.textures)
         .map(([name, type]) => `uniform ${type} t_${name};`)
-        .join('\n');
+        .join("\n");
 
       const vertexShaderSource = [
         shaderAttributeSource,
@@ -346,10 +346,10 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
         }),
       ]
         .filter(Boolean)
-        .join('\n');
+        .join("\n");
 
       const fragmentShaderSource = [
-        'precision highp float;',
+        "precision highp float;",
         shaderVaryingSource,
         shaderTextureSource,
         shaderFragmentUniformSource,
@@ -360,16 +360,16 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
         }),
       ]
         .filter(Boolean)
-        .join('\n');
+        .join("\n");
 
       ctx.attachShader(
         program,
-        compileShader(ctx, ctx.VERTEX_SHADER, vertexShaderSource),
+        compileShader(ctx, ctx.VERTEX_SHADER, vertexShaderSource)
       );
 
       ctx.attachShader(
         program,
-        compileShader(ctx, ctx.FRAGMENT_SHADER, fragmentShaderSource),
+        compileShader(ctx, ctx.FRAGMENT_SHADER, fragmentShaderSource)
       );
 
       ctx.linkProgram(program);
@@ -383,8 +383,8 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
         if (location < 0) {
           throw new Error(
             `Failed to get location of attribute '${String(
-              name,
-            )}'. Is this attribute being used by your shader?`,
+              name
+            )}'. Is this attribute being used by your shader?`
           );
         }
 
@@ -400,8 +400,8 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
         if (!location) {
           throw new Error(
             `Failed to get location of uniform '${String(
-              name,
-            )}'. Is this uniform being used by your shader?`,
+              name
+            )}'. Is this uniform being used by your shader?`
           );
         }
 
@@ -410,7 +410,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
       }, {} as any);
 
       const fragmentUniformLocations = Object.keys(
-        options.fragmentUniforms,
+        options.fragmentUniforms
       ).reduce<{
         [name in keyof typeof options.fragmentUniforms]: WebGLUniformLocation;
       }>((acc, name: keyof typeof options.fragmentUniforms) => {
@@ -419,8 +419,8 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
         if (!location) {
           throw new Error(
             `Failed to get location of uniform '${String(
-              name,
-            )}'. Is this uniform being used by your shader?`,
+              name
+            )}'. Is this uniform being used by your shader?`
           );
         }
 
@@ -436,8 +436,8 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
         if (!location) {
           throw new Error(
             `Failed to get location of texture '${String(
-              name,
-            )}'. Is this texture being used by your shader?`,
+              name
+            )}'. Is this texture being used by your shader?`
           );
         }
 
@@ -471,23 +471,23 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
               const buffer = buffers[bufferReference.id];
 
               if (!buffer) {
-                throw new Error('Invalid attribute buffer reference');
+                throw new Error("Invalid attribute buffer reference");
               }
 
               ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer);
               ctx.enableVertexAttribArray(location);
 
               switch (type) {
-                case 'float':
+                case "float":
                   ctx.vertexAttribPointer(location, 1, ctx.FLOAT, false, 0, 0);
                   break;
-                case 'vec2':
+                case "vec2":
                   ctx.vertexAttribPointer(location, 2, ctx.FLOAT, false, 0, 0);
                   break;
                 default:
-                  console.error('Failed to bind attribute');
+                  console.error("Failed to bind attribute");
               }
-            },
+            }
           );
 
           Object.entries(uniforms).forEach(([name, value]) => {
@@ -508,18 +508,18 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
               const texture = textures[textureReference.id];
 
               if (!texture) {
-                throw new Error('Invalid texture reference');
+                throw new Error("Invalid texture reference");
               }
 
               const textureUnit = textureUnits[textureIndex];
               ctx.activeTexture(textureUnit);
               ctx.bindTexture(ctx.TEXTURE_2D, texture);
               ctx.uniform1i(location, textureIndex);
-            },
+            }
           );
 
           if (count === null) {
-            throw new Error('No attribute buffer data supplied');
+            throw new Error("No attribute buffer data supplied");
           }
 
           const drawingMode = strip ? ctx.TRIANGLE_STRIP : ctx.TRIANGLES;
@@ -528,7 +528,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
             const buffer = buffers[indicesBuffer.id];
 
             if (!buffer) {
-              throw new Error('Invalid indices buffer reference');
+              throw new Error("Invalid indices buffer reference");
             }
 
             ctx.bindBuffer(ctx.ELEMENT_ARRAY_BUFFER, buffer);
@@ -536,7 +536,7 @@ const createGL = (canvas: HTMLCanvasElement): GL => {
               drawingMode,
               indicesBuffer.getSize(),
               ctx.UNSIGNED_INT,
-              0,
+              0
             );
           } else {
             ctx.drawArrays(drawingMode, 0, count);
